@@ -1,1 +1,1 @@
-# typechallenges
+[link](./note.md)
