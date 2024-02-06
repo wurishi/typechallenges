@@ -2153,10 +2153,46 @@ type Mutable<T> = {
 }
 ```
 
-TODO:
-https://hub.yzuu.cf/type-challenges/type-challenges/tree/main/questions/02822-hard-split
+# 2822. Split
 
-https://hub.yzuu.cf/type-challenges/type-challenges/issues?q=label%3A2793+label%3Aanswer+sort%3Areactions-%2B1-desc+
+```ts
+type result = Split<'Hi! How are you?', ' '>  // should be ['Hi!', 'How', 'are', 'you?']
+```
+
+```ts
+type Split<S extends string, SEP extends string> = any
+// 1.
+type Split<S extends string, SEP extends string = ''> = string extends S
+? string[]
+: S extends `${infer A}${SEP}${infer B}`
+    ? [A, ...(B extends '' ? [] : Split<B, SEP>)]
+    : SEP extends ''
+        ? []
+        : [S]
+```
+
+# 2828. ClassPublicKeys 
+
+```ts
+class A {
+  public str: string
+  protected num: number
+  private bool: boolean
+  getNum() {
+    return Math.random()
+  }
+}
+
+type publicKeys = ClassPublicKeys<A> // 'str' | 'getNum'
+```
+
+```ts
+type ClassPublicKeys = any
+// 1.
+type ClassPublicKeys<T> = keyof T // :D
+```
+
+// TODO: https://github.com/type-challenges/type-challenges/tree/main/questions/02852-medium-omitbytype
 
 # 3057. Push
 
