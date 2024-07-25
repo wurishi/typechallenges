@@ -2192,7 +2192,81 @@ type ClassPublicKeys = any
 type ClassPublicKeys<T> = keyof T // :D
 ```
 
-// TODO: https://github.com/type-challenges/type-challenges/tree/main/questions/02852-medium-omitbytype
+# 2852. OmitByType
+
+```ts
+type OmitBoolean = OmitByType<{
+  name: string
+  count: number
+  isReadonly: boolean
+  isEnable: boolean
+}, boolean> // { name: string; count: number }
+```
+
+```ts
+type OmitByType<T, U> = any
+// 1.
+type OmitByType<T, U> = {
+    [P in keyof T as T[P] extends U ? never : P]: T[P]
+}
+```
+
+# 2857. IsRequiredKey
+
+```ts
+type A = IsRequiredKey<{ a: number, b?: string },'a'> // true
+type B = IsRequiredKey<{ a: number, b?: string },'b'> // false
+type C = IsRequiredKey<{ a: number, b?: string },'b' | 'a'> // false
+```
+
+```ts
+type IsRequiredKey<T, K extends keyof T> = any
+// 1.
+type IsRequiredKey<T, K extends keyof T> = 
+    Pick<T, K> extends Required<Pick<T, K>>
+        ? true
+        : false
+// 2. 或者把 Pick<T, K> 合并一下
+type IsRequiredKey<T, K extends keyof T, U = Pick<T, K>> = 
+    U extends Required<U>
+        ? true
+        : false
+```
+
+# 2946. ObjectEntries
+
+```ts
+interface Model {
+  name: string;
+  age: number;
+  locations: string[] | null;
+}
+type modelEntries = ObjectEntries<Model> // ['name', string] | ['age', number] | ['locations', string[] | null];
+```
+
+```ts
+type ObjectEntries<T> = any
+// 1. 数据转联合类型
+type ObjectEntries<T> = T[keyof T]
+// 2. 
+type ObjectEntries<T> = {
+    [K in keyof T]: [K, T[K]]
+}[keyof T]
+// 3. 使用 -? 强制让 key 变成不可选，否则[keyof T]会取到 key 为 undefined 的情况
+type ObjectEntries<T> = {
+    [K in keyof T]-?: [K, T[K]]
+}[keyof T]
+// 4. 还需要删除 undefined
+type RemoveUndefined<T> = [T] extends [undefined] ? T : Exclude<T, undefined>
+type ObjectEntries<T> = {
+    [K in keyof T]-?: [K, RemoveUndefined<T[K]>]
+}[keyof T]
+// 5. 无法通过 Equal<ObjectEntries<{ key: string | undefined }>, ['key', string | undefined]>
+// 6. 使用另一种方案
+type ObjectEntries<T> = {
+    [K in keyof Required<T>]: [K, [T[K]] extends [undefined] ? undefined : Required<T>[K]]
+}[keyof T]
+```
 
 # 3057. Push
 
