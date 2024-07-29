@@ -2505,3 +2505,43 @@ type InorderTraversal<T extends TreeNode | null> = T extends TreeNode
     ]
     : []
 ```
+
+# 4037. IsPalindrome
+
+```ts
+IsPalindrome<'abc'> // false
+IsPalindrome<121> // true
+```
+
+```ts
+type IsPalindrome<T> = any
+// 1. 写一个反转字符串的工具类型
+type Reverse<S, T extends string = ''> = S extends `${infer F}${infer R}`
+    ? Reverse<R, `${F}${T}`>
+    : T
+// 2. number 可以通过 `${T}` 转换为字符串
+type IsPalindrome<T extends string | number> = `${T}` extends Reverse<`${T}`>
+    ? true
+    : false
+
+```
+
+# 4179. Flip
+
+```ts
+Flip<{ a: "x", b: "y", c: "z" }>; // {x: 'a', y: 'b', z: 'c'}
+Flip<{ a: 1, b: 2, c: 3 }>; // {1: 'a', 2: 'b', 3: 'c'}
+Flip<{ a: false, b: true }>; // {false: 'a', true: 'b'}
+```
+
+```ts
+type Flip<T> = any
+// 1. 使用 `${T[P]}` 将bool,null等不规范的值转换成 string key
+type Flip<T> = {
+    [P in keyof T as `${T[P]}`]: P
+}
+// 2. `${T[P]}` 仍然会报错，所以将 T 的类型限制一下
+type Flip<T extends Record<PropertyKey, any>> = {
+    [P in keyof T as `${T[P]}`]: P
+}
+```
