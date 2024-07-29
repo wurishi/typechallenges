@@ -2332,6 +2332,22 @@ type Unshift<T extends unknown[], U> = [U] extends [T[number]] ? T : [U, ...T]
 type Unshift<T extends unknown[], U> = [U, ...T]
 ```
 
+# 3062. Shift
+
+```ts
+type Result = Shift<[3, 2, 1]> // [2, 1]
+```
+
+```ts
+type Shift<T> = any
+// 1.
+type Shift<T extends unknown[]> = T extends [infer H, ...infer R]
+    ? R : never
+// 2. 为了 pass Equal<Shift<[]>, []> 将 never 改为 [] 或 T
+type Shift<T extends unknown[]> = T extends [infer H, ...infer R]
+    ? R : T
+```
+
 # 3312. Parameters
 
 实现内置的 `Parameters` 类型
