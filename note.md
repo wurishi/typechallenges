@@ -2348,6 +2348,24 @@ type Shift<T extends unknown[]> = T extends [infer H, ...infer R]
     ? R : T
 ```
 
+# 3188. Tuple to Nested Object
+
+```ts
+type a = TupleToNestedObject<['a'], string> // {a: string}
+type b = TupleToNestedObject<['a', 'b'], number> // {a: {b: number}}
+type c = TupleToNestedObject<[], boolean> // boolean. if the tuple is empty, just return the U type
+```
+
+```ts
+type TupleToNestedObject<T, U> = any
+// 1.
+type TupleToNestedObject<T extends unknown[], U> = T extends [infer H, ...infer R]
+    ? {
+        [K in H as H extends PropertyKey ? H : never]: TupleToNestedObject<R, U>
+    }
+    : U
+```
+
 # 3312. Parameters
 
 实现内置的 `Parameters` 类型
