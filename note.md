@@ -2364,6 +2364,29 @@ type TupleToNestedObject<T extends unknown[], U> = T extends [infer H, ...infer 
         [K in H as H extends PropertyKey ? H : never]: TupleToNestedObject<R, U>
     }
     : U
+// 2. 对于 as H extends PropertyKey ? H : never，可以使用&PropertyKey 来简化
+type TupleToNestedObject<T, U> = T extends [infer H, ...infer R]
+    ? {
+        [K in H&PropertyKey]: TupleToNestedObject<R, U>
+    }
+    : U
+```
+
+# 3192. Reverse
+
+实现类型版本的数组反转 `Array.reverse`
+
+```ts
+type a = Reverse<['a', 'b']> // ['b', 'a']
+type b = Reverse<['a', 'b', 'c']> // ['c', 'b', 'a']
+```
+
+```ts
+type Reverse<T> = any
+// 1.
+type Reverse<T extends unknown[]> = T extends [infer F, ...infer R]
+    ? [...Reverse<R>, F]
+    : T
 ```
 
 # 3312. Parameters

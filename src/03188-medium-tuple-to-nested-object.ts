@@ -19,9 +19,14 @@
 /* _____________ Your Code Here _____________ */
 
 // type TupleToNestedObject<T, U> = any
-type TupleToNestedObject<T extends unknown[], U> = T extends [infer H, ...infer R]
+// type TupleToNestedObject<T extends unknown[], U> = T extends [infer H, ...infer R]
+//     ? {
+//         [K in H as H extends PropertyKey ? H : never]: TupleToNestedObject<R, U>
+//     }
+//     : U
+type TupleToNestedObject<T, U> = T extends [infer H, ...infer R]
     ? {
-        [K in H as H extends PropertyKey ? H : never]: TupleToNestedObject<R, U>
+        [K in H&PropertyKey]: TupleToNestedObject<R, U>
     }
     : U
 
