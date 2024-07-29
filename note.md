@@ -2268,6 +2268,34 @@ type ObjectEntries<T> = {
 }[keyof T]
 ```
 
+# 2949. ObjectFromEntries
+
+```ts
+interface Model {
+  name: string;
+  age: number;
+  locations: string[] | null;
+}
+
+type ModelEntries = ['name', string] | ['age', number] | ['locations', string[] | null];
+
+type result = ObjectFromEntries<ModelEntries> // expected to be Model
+```
+
+```ts
+type ObjectFromEntries<T> = any
+// 1.
+type ObjectFromEntries<T extends [string, any]> = {}
+// 2. 遍历 T，发现 T[1] 是所有字段类型的联合
+type ObjectFromEntries<T extends [string, any]> = {
+    [K in T as T[0]]: T[1]
+}
+// 3. 改为遍历 T[0]，并且对 value T 进行判断
+type ObjectFromEntries<T extends [string, any]> = {
+    [K in T[0]]: T extends [K, any] ? T[1] : never
+}
+```
+
 # 3057. Push
 
 在类型系统中实现 `Array.push`
