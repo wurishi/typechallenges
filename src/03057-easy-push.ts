@@ -21,7 +21,9 @@
 // type Push<T, U> = any
 // type Push<T extends any[], U> = U extends any[] ? [...T, ...U] : [...T, U]
 type Push<T extends unknown[], U> = [U] extends [T[number]] ? T : [...T, U]
-// type A = Push<['1', 2, '3', boolean], boolean>
+// type Push<T extends unknown[], U> = [...T, U]
+
+type A = Push<['1', 2, '3', boolean], boolean>
 
 /* _____________ 测试用例 _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'

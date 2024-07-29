@@ -2310,7 +2310,8 @@ type Push<T, U> = any
 type Push<T extends any[], U> = U extends any[] ? [...T, ...U] : [...T, U]
 // 2. 在 boolean 判断时再次发生问题 Push<[1], boolean> => [1, true] || [1, false] 
 type Push<T extends unknown[], U> = [U] extends [T[number]] ? T : [...T, U]
-// 3. 但在碰到 Push<['1', 2, '3', boolean], boolean> 这种情况时，上述方法仍不正确
+// 3. 但在碰到 Push<['1', 2, '3', boolean], boolean> 这种情况时，上述方法仍不正确，所以直接使用 ... 操作符
+type Push<T extends unknown[], U> = [...T, U]
 ```
 
 # 3060. Unshift
@@ -2327,7 +2328,8 @@ type Unshift<T, U> = any
 type Unshift<T extends unknown[], U> = U extends any[] ? [...U, ...T] : [U, ...T]
 // 2. 同样的 Unshift<[1], boolean> = [1, true] | [1, false]
 type Unshift<T extends unknown[], U> = [U] extends [T[number]] ? T : [U, ...T]
-// 3. 同样的如果 T 中有 U 时，结果不正确
+// 3. 同样的如果 T 中有 U 时，结果不正确，所以也是直接使用 ...
+type Unshift<T extends unknown[], U> = [U, ...T]
 ```
 
 # 3312. Parameters

@@ -20,7 +20,8 @@
 
 // type Unshift<T, U> = any
 // type Unshift<T extends unknown[], U> = U extends any[] ? [...U, ...T] : [U, ...T]
-type Unshift<T extends unknown[], U> = [U] extends [T[number]] ? T : [U, ...T]
+// type Unshift<T extends unknown[], U> = [U] extends [T[number]] ? T : [U, ...T]
+type Unshift<T extends unknown[], U> = [U, ...T]
 
 /* _____________ 测试用例 _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'
