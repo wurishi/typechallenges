@@ -2389,6 +2389,51 @@ type Reverse<T extends unknown[]> = T extends [infer F, ...infer R]
     : T
 ```
 
+# 3196. Flip Arguments
+
+```ts
+type Flipped = FlipArguments<(arg0: string, arg1: number, arg2: boolean) => void> 
+// (arg0: boolean, arg1: number, arg2: string) => void
+```
+
+```ts
+type FlipArguments<T> = any
+// 1. 通过 infer 获得所有 args
+type FlipArguments<T extends Function> = T extends (...args: [...infer A]) => infer R
+    ? (...args: 反转A) => R
+    : never
+// 2. 参考 3192 写一个反转工具类型
+type Reverse<T> = T extends [infer F, ...infer R]
+? [...Reverse<R>, F]
+: T
+type FlipArguments<T extends Function> = T extends (...args: [...infer A]) => infer R
+    ? (...args: Reverse<A>) => R
+    : never
+```
+
+# 3243. FlattenDepth
+
+```ts
+type a = FlattenDepth<[1, 2, [3, 4], [[[5]]]], 2> // [1, 2, 3, 4, [5]]. flattern 2 times
+type b = FlattenDepth<[1, 2, [3, 4], [[[5]]]]> // [1, 2, 3, 4, [[5]]]. Depth defaults to be 1
+```
+
+```ts
+type FlattenDepth = any
+// 1. 添加辅助泛型 S, U
+type FlattenDepth<
+    T extends unknown[],
+    S extends number = 1, // flat 深度
+    U extends any[] = [] // 使用 U 记录当前深度， U['length'] 可以用来和 S 进行比较
+> = U['length'] extends S
+    ? T // 已经到最大深度不需要再 flat 了
+    : T extends [infer F, ...infer R] // 拆分数组
+        ? F extends unknown[] // 如果第一个元素是数组，那么flat它，此时深度+1，其他的 R 以当前深度继续递归调用 FlattenDepth
+            ? [...FlattenDepth<F, S, [...U, 1]>, ...FlattenDepth<R, S, U>]
+            : [F, ...FlattenDepth<R, S, U>] // F 不需要 flat，对其他元素 R 作递归调用
+        : T
+```
+
 # 3312. Parameters
 
 实现内置的 `Parameters` 类型
@@ -2402,4 +2447,61 @@ type FunctionParamsType = MyParameters<typeof foo> // [arg1: string, arg2: numbe
 type MyParameters<T extends (...args: any[]) => any> = any
 // 1. 通过 infer 把 ...args: any[] 变成一个内部泛型
 type MyParameters<T extends (...args: any[]) => any> = T extends (...any: infer S) => any ? S : any
+```
+# 3326. BEM style string
+
+```ts
+BEM<'btn', ['price'], ['warning', 'success']>
+// 'btn__price--warning' | 'btn__price--success'
+```
+
+```ts
+type BEM<B extends string, E extends string[], M extends string[]> = any
+// 1. 通过``加 [number] 已经能自动生成联合类型
+type BEM<B extends string, E extends string[], M extends string[]> = `${B}__${E[number]}--${M[number]}`
+// 2. 但要考虑空数组的情况
+type IsNever<T> = T extends [never] ? true : false
+type IsUnion<U> = IsNever<U> extends true ? '' : U
+type BEM<B extends string, E extends string[], M extends string[]> = 
+`${B}${IsUnion<`__${E[number]}`>}${IsUnion<`--${M[number]}`>}`
+```
+
+# 3376. InorderTraversal
+
+```ts
+const tree1 = {
+  val: 1,
+  left: null,
+  right: {
+    val: 2,
+    left: {
+      val: 3,
+      left: null,
+      right: null,
+    },
+    right: null,
+  },
+} as const
+
+type A = InorderTraversal<typeof tree1> // [1, 3, 2]
+```
+
+```ts
+type InorderTraversal<T extends TreeNode | null> = any
+// 1.
+type InorderTraversal<T extends TreeNode | null> = [T] extends [TreeNode]
+    ? [
+        ...InorderTraversal<T['left']>,
+        T['val'],
+        ...InorderTraversal<T['right']>
+    ]
+    : []
+// 2. 据说不能直接使用 T extends TreeNode
+type InorderTraversal<T extends TreeNode | null> = T extends TreeNode
+    ? [
+        ...InorderTraversal<T['left']>,
+        T['val'],
+        ...InorderTraversal<T['right']>
+    ]
+    : []
 ```
