@@ -2570,3 +2570,63 @@ N_1 extends any[] = [any], // N=3时，F(N-1) = 1
         ? [...N_2, ...N_1]['length'] // F(N-1) + F(N-2)
         : Fibonacci<T, [...N, any], N_1, [...N_2, ...N_1]>
 ```
+
+# 4260. AllCombinations
+
+```ts
+type AllCombinations_ABC = AllCombinations<'ABC'>;
+// should be '' | 'A' | 'B' | 'C' | 'AB' | 'AC' | 'BA' | 'BC' | 'CA' | 'CB' | 'ABC' | 'ACB' | 'BAC' | 'BCA' | 'CAB' | 'CBA'
+```
+
+```ts
+type AllCombinations<S> = any
+// 1. 先创建一个字符串转联合类型的工具类型
+type String2Union<S extends string> = 
+S extends `${infer C}${infer REST}`
+    ? C | String2Union<REST>
+    : never
+// 2.
+type AllCombinations<
+STR extends string,
+S extends string = String2Union<STR>
+> = [S] extends [never]
+    ? '' // 空字符串
+    : '' | {[K in S]: `${K}${AllCombinations<never, Exclude<S, K>>}`}[S]
+```
+
+# 4425. Greater Than
+
+```ts
+GreaterThan<2, 1> //should be true
+GreaterThan<1, 1> //should be false
+GreaterThan<10, 100> //should be false
+GreaterThan<111, 11> //should be true
+```
+
+```ts
+type GreaterThan<T extends number, U extends number> = any
+// 1. 递归法 （数字较大时会溢出）
+type GreaterThan<
+T extends number,
+U extends number,
+A extends unknown[] = []
+> = T extends A['length']
+    ? false
+    : U extends A['length']
+        ? true
+        : GreaterThan<T, U, [...A, unknown]>
+// 2. 通过构造数组使用类似 [1, 1, 1] extends [1, 1] ? true : false 来判断
+// 2. 构造数组
+type NewArr<T extends number, A extends any[] = []> = 
+A['length'] extends T
+    ? A
+    : NewArr<T, [...A, '']>
+// 3. 比较数组
+type GreaterArr<T extends any[], U extends any[]> = 
+U extends [...T, ...any]
+    ? false
+    : true
+// 4.
+type GreaterThan<T extends number, U extends number> = 
+GreaterArr<NewArr<T>, NewArr<U>>
+```
