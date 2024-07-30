@@ -2630,3 +2630,20 @@ U extends [...T, ...any]
 type GreaterThan<T extends number, U extends number> = 
 GreaterArr<NewArr<T>, NewArr<U>>
 ```
+
+# 4471. Zip
+
+```ts
+type exp = Zip<[1, 2], [true, false]> // expected to be [[1, true], [2, false]]
+```
+
+```ts
+type Zip<T, U> = any
+// 1.
+type Zip<T extends any[], U extends any[]> = 
+T extends [infer T_1, ...infer T_R]
+    ? U extends [infer U_1, ...infer U_R]
+        ? [[T_1, U_1], ...Zip<T_R, U_R>]
+        : []
+    : []
+```
