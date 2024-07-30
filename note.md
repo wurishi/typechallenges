@@ -2668,3 +2668,57 @@ type IsTuple<T> = [T] extends [never]
             : true
         : false
 ```
+
+# 4499. Chunk
+
+```ts
+type exp1 = Chunk<[1, 2, 3], 2> // expected to be [[1, 2], [3]]
+type exp2 = Chunk<[1, 2, 3], 4> // expected to be [[1, 2, 3]]
+type exp3 = Chunk<[1, 2, 3], 1> // expected to be [[1], [2], [3]]
+```
+
+```ts
+type Chunk = any
+// 1.
+type Chunk<
+T extends any[], 
+U extends number = 1, 
+S extends any[] = []
+> = T extends [infer F, ...infer R]
+    ? S['length'] extends U // 能拆
+        ? [S, ...Chunk<T, U>] // S 放到数组，剩下的继续拆分，这里的 T 是已经去掉 S 的。
+        : Chunk<R, U, [...S, F]> // 把 F 放到缓存数组，并且对 R 继续拆分
+    : S['length'] extends 0 // 不能再拆了，如果缓存数组为空则返回空数组(S本身也可以，因为 S.length = 0)
+        ? []
+        : [S] // 把缓存数组作为单独一个数组放到大数组中
+```
+
+# 4518. Fill
+
+```ts
+type exp = Fill<[1, 2, 3], 0> // expected to be [0, 0, 0]
+```
+
+```ts
+type Fill<
+  T extends unknown[],
+  N,
+  Start extends number = 0,
+  End extends number = T['length'],
+> = any
+// 1.
+type Fill<
+T extends unknown[],
+N,
+Start extends number = 0,
+End extends number = T['length'],
+Count extends any[] = [], // 遍历计数
+StartFlag extends boolean = Count['length'] extends Start ? true : false // 是否开始
+> = Count['length'] extends End
+    ? T // 已经遍历完了
+    : T extends [infer F, ...infer REST]
+        ? StartFlag extends false
+            ? [F, ...Fill<REST, N, Start, End, [...Count, 0]>] // 没有到达 Start
+            : [N, ...Fill<REST, N, Start, End, [...Count, 0], true>] // 进行替换，因为 StartFlag 只能在到达 Start 时变为 true，超过时不能再计算所以要把 true 带下去。
+        : T // 数组已经不能再拆分了
+```
