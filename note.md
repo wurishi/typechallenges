@@ -2647,3 +2647,24 @@ T extends [infer T_1, ...infer T_R]
         : []
     : []
 ```
+
+# 4484. IsTuple
+
+```ts
+type case1 = IsTuple<[number]> // true
+type case2 = IsTuple<readonly [number]> // true
+type case3 = IsTuple<number[]> // false
+```
+
+```ts
+type IsTuple<T> = any
+// 1. 元组长度有限，length 返回的是具体的数字。
+// 1. 数组长度无限，length 返回的是 number
+type IsTuple<T> = [T] extends [never]
+    ? false
+    : T extends readonly any[]
+        ? number extends T['length']
+            ? false
+            : true
+        : false
+```
