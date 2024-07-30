@@ -2545,3 +2545,28 @@ type Flip<T extends Record<PropertyKey, any>> = {
     [P in keyof T as `${T[P]}`]: P
 }
 ```
+
+# 4182. 斐波那契序列
+
+```ts
+type Result1 = Fibonacci<3> // 2
+type Result2 = Fibonacci<8> // 21
+```
+
+```ts
+type Fibonacci<T extends number> = any
+// 1. 1 和 2 直接返回 1
+type Fibonacci<T extends number> = T extends 1 | 2
+    ? 1
+    : // 从3开始都是 f(N) = F(N-1) + F(N-2)
+// 2. 所以定义3个泛型，N 用来记数，N_1，N_2 用来表示 N-1, N-2
+type Fibonacci<T extends number,
+N extends any[] = [any, any, any],
+N_2 extends any[] = [any], // N=3时，F(N-2) = 1
+N_1 extends any[] = [any], // N=3时，F(N-1) = 1
+> = T extends 1 | 2
+    ? 1
+    : T extends N['length']
+        ? [...N_2, ...N_1]['length'] // F(N-1) + F(N-2)
+        : Fibonacci<T, [...N, any], N_1, [...N_2, ...N_1]>
+```
