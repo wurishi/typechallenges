@@ -2744,3 +2744,30 @@ type TrimRight<S extends string> = S extends `${infer R}${' ' | '\n' | '\t'}`
     ? TrimRight<R>
     : S
 ```
+
+# 5117. 去除数组指定元素
+
+实现一个像 `Lodash.without` 函数一样的泛型 `Without<T, U>`，它接收数组类型的 T 和数字或数组类型的 U 为参数，会返回一个去除 U 中元素的数组 T。
+
+```ts
+type Res = Without<[1, 2], 1>; // expected to be [2]
+type Res1 = Without<[1, 2, 4, 1, 5], [1, 2]>; // expected to be [4, 5]
+type Res2 = Without<[2, 3, 2, 3, 2, 3, 2, 3], [2, 3]>; // expected to be []
+```
+
+```ts
+type Without<T, U> = any
+// 1.
+type Without<T, U> = T extends [infer F, ...infer R]
+    ? F extends U
+        ? Without<R, U>
+        : [F, ...Without<R, U>]
+    : T
+// 2. 测试用例中 U 可以是数组也可能是单项，光用 F extends U 不能解决数组的问题。需要一个工具类型将数组转换成联合类型
+type ToUnion<T> = T extends any[] ? T[number] : T
+type Without<T, U> = T extends [infer F, ...infer R]
+    ? F extends ToUnion<U>
+        ? Without<R, U>
+        : [F, ...Without<R, U>]
+    : T
+```
