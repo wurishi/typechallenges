@@ -2797,3 +2797,29 @@ type Trunc<S extends string | number> = `${S}` extends `${infer I}.${string}`
             : I
     : `${S}`
 ```
+
+# 5153. IndexOf
+
+```ts
+type Res = IndexOf<[1, 2, 3], 2>; // expected to be 1
+type Res1 = IndexOf<[2,6, 3,8,4,1,7, 3,9], 3>; // expected to be 2
+type Res2 = IndexOf<[0, 0, 0], 2>; // expected to be -1
+```
+
+```ts
+type IndexOf<T, U> = any
+// 1. 
+type IndexOf<T, U, Count extends any[] = []> = 
+T extends [infer F, ...infer R]
+    ? F extends U
+        ? Count['length']
+        : IndexOf<R, U, [...Count, any]>
+    : -1
+// 2. 因为 1 extends number，所以要使用 Equal 来判断是否相等
+type IndexOf<T, U, Count extends any[] = []> =
+T extends [infer F, ...infer R]
+    ? Equal<F, U> extends true
+        ? Count['length']
+        : IndexOf<R, U, [...Count, any]>
+    : -1
+```
