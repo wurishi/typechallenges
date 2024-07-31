@@ -2842,3 +2842,23 @@ type MutableKeys<T> = keyof {
     [P in keyof T as Equal<{ [K in P]: T[K] }, { -readonly [K in P]: T[K]}> extends true ? P : never]: any
 }
 ```
+
+# 5310. Join
+
+```ts
+type Res = Join<["a", "p", "p", "l", "e"], "-">; // expected to be 'a-p-p-l-e'
+type Res1 = Join<["Hello", "World"], " ">; // expected to be 'Hello World'
+type Res2 = Join<["2", "2", "2"], 1>; // expected to be '21212'
+type Res3 = Join<["o"], "u">; // expected to be 'o'
+```
+
+```ts
+type Join<T, U> = any
+// 1.
+type Join<T, U extends string | number = ','> =
+T extends [infer F extends string, ...infer R]
+    ? R['length'] extends 0 // 当递归到最后一个时
+        ? F
+        : `${F}${U}${Join<R, U>}`
+    : ''
+```
