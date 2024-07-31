@@ -2823,3 +2823,22 @@ T extends [infer F, ...infer R]
         : IndexOf<R, U, [...Count, any]>
     : -1
 ```
+
+# 5181. Mutable Keys
+
+```ts
+type Keys = MutableKeys<{ readonly foo: string; bar: number }>;
+// expected to be “bar”
+```
+
+```ts
+type MutableKeys<T> = any
+// 1. 
+type MutableKeys<T> = keyof {
+    [P in keyof T as Equal<Pick<T, P>, Readonly<Pick<T, P>>> extends false ? P : never]: any
+}
+// 2. OR
+type MutableKeys<T> = keyof {
+    [P in keyof T as Equal<{ [K in P]: T[K] }, { -readonly [K in P]: T[K]}> extends true ? P : never]: any
+}
+```
