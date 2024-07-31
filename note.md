@@ -2771,3 +2771,29 @@ type Without<T, U> = T extends [infer F, ...infer R]
         : [F, ...Without<R, U>]
     : T
 ```
+
+# 5140. Trunc
+
+```ts
+type A = Trunc<12.34> // 12
+```
+
+```ts
+type Trunc = any
+// 1.
+type Trunc<S> = S extends `${infer I}.${string}`
+    ? I
+    : S
+// 2. 测试用例中 S 可以是数字，所以需要一开始就将 S 转换为字符串
+type Trunc<S extends string | number> = `${S}` extends `${infer I}.${string}`
+    ? I
+    : `${S}`
+// 3. 处理 0 和 -0 的情况
+type Trunc<S extends string | number> = `${S}` extends `${infer I}.${string}`
+    ? I extends ''
+        ? '0'
+        : I extends '-'
+            ? '-0'
+            : I
+    : `${S}`
+```
