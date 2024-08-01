@@ -2937,3 +2937,29 @@ type Intersection<T> = T extends [infer F, ...infer R]
     ? ToUnion<F> & Intersection<R>
     : unknown
 ```
+
+# 5821. MapTypes
+
+```ts
+type StringToNumber = { mapFrom: string; mapTo: number;}
+MapTypes<{iWillBeANumberOneDay: string}, StringToNumber> // gives { iWillBeANumberOneDay: number; }
+
+type StringToNumber = { mapFrom: string; mapTo: number;}
+type StringToDate = { mapFrom: string; mapTo: Date;}
+MapTypes<{iWillBeNumberOrDate: string}, StringToDate | StringToNumber> // gives { iWillBeNumberOrDate: number | Date; }
+
+type StringToNumber = { mapFrom: string; mapTo: number;}
+MapTypes<{iWillBeANumberOneDay: string, iWillStayTheSame: Function}, StringToNumber> // // gives { iWillBeANumberOneDay: number, iWillStayTheSame: Function }
+```
+
+```ts
+type MapTypes<T, R> = any
+// 1.
+type MapType<T, R extends { mapFrom: any, mapTo: any }> = {
+    [K in keyof T]: T[K] extends R['mapFrom']
+        ? R extends { mapFrom: T[K] } // 因为 R 可能是联合类型，所以要再用 extends 判断一次，收敛结果
+            ? R['mapTo']
+            : never
+        : T[K]
+}
+```
