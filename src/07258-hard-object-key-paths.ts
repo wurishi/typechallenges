@@ -50,6 +50,13 @@ K extends keyof T = keyof T
 
 type A = ObjectKeyPaths<typeof ref>
 
+// function Find<T extends object>(path: ObjectKeyPaths<T>): any {
+
+// }
+
+// const obj = {a: 1, b: { c: [1, 2, 3]}}
+// Find<typeof obj>('b.c[0]')
+
 /* _____________ Test Cases _____________ */
 import type { Equal, Expect, ExpectExtends } from '@type-challenges/utils'
 

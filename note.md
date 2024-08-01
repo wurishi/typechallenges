@@ -3017,3 +3017,22 @@ type T3 = ObjectKeyPaths<{ books: [{ name: string; price: number }] }>; // expec
 ```
 
 07258-hard-object-key-paths.ts
+
+# 7544. Construct Tuple
+
+构造一个给定长度的元组。
+
+```ts
+type result = ConstructTuple<2> // 期望得到 [unknown, unkonwn]
+```
+
+```ts
+type ConstructTuple<L extends number> = any
+// 1. 递归只能支持到1000
+type ConstructTuple<L extends number, U extends unknown[] = []> =
+L extends U['length']
+    ? U
+    : ConstructTuple<L, [...U, unknown]>
+// 2. 按位数
+// 07544-medium-construct-tuple 类似 6141 的从左到右，只不过这次每移一位是 X10
+```
