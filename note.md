@@ -2909,3 +2909,31 @@ type Unique<T, U extends any[] = []> = T extends [infer F, ...infer R]
         : Unique<R, [...U, F]>
     : U
 ```
+
+# 5423. Intersection
+
+```ts
+type Res = Intersection<[[1, 2], [2, 3], [2, 2]]>; // expected to be 2
+type Res1 = Intersection<[[1, 2, 3], [2, 3, 4], [2, 2, 3]]>; // expected to be 2 | 3
+type Res2 = Intersection<[[1, 2], [3, 4], [5, 6]]>; // expected to be never
+type Res3 = Intersection<[[1, 2, 3], [2, 3, 4], 3]>; // expected to be 3
+type Res4 = Intersection<[[1, 2, 3], 2 | 3 | 4, 2 | 3]>; // expected to be 2 | 3
+type Res5 = Intersection<[[1, 2, 3], 2, 3]>; // expected to be never
+```
+
+```ts
+type Intersection<T> = any
+// 1. 利用 (2 | 3) & (1 | 3) = 3 的原理
+type Intersection<T extends unknown[]> = 
+T extends [infer F, ...infer R]
+    ? (F extends unknown[]
+        ? F[number]
+        : F
+        ) & Intersection<R>
+    : unknown
+// 2. 或者写一个数组转联合的工具类型，提高代码可读性
+type ToUnion<T> = T extends any[] ? T[number] : T
+type Intersection<T> = T extends [infer F, ...infer R]
+    ? ToUnion<F> & Intersection<R>
+    : unknown
+```
