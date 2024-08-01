@@ -2963,3 +2963,40 @@ type MapType<T, R extends { mapFrom: any, mapTo: any }> = {
         : T[K]
 }
 ```
+
+# 6141. Binary to Decimal
+
+```ts
+type Res1 = BinaryToDecimal<'10'>; // expected to be 2
+type Res2 = BinaryToDecimal<'0011'>; // expected to be 3
+```
+
+```ts
+type BinaryToDecimal<S extends string> = any
+// 1. 从左到右
+type BinaryToDecimal<
+S extends string,
+R extends any[] = []
+> = S extends `${infer F}${infer L}`
+    ? F extends '0'
+        ? BinaryToDecimal<L, [...R, ...R]> // '10' 一开始是 1，虽然第二位是0，但整体 X2 之后就能得到正确的值
+        : BinaryToDecimal<L, [...R, ...R, 1]>
+    : R['length']
+// 2. 从右到左
+// 2. 将字符串转换成元组，这样通过[..., L]就能得到L最后一个
+type StringToTuple<S extends string> = S extends `${infer F}${infer R}`
+    ? [F, ...StringToTuple<R>]
+    : []
+// 3. 通过元组计算
+type Convert<
+T extends string [],
+Arr extends number[] = [1],
+Res extends number[] = []
+> = T extends [...infer F extends string[], infer L]
+    ? L extends '1'
+        ? Convert<F, [...Arr, ...Arr], [...Res, ...Arr]>
+        : Convert<F, [...Arr, ...Arr], Res>
+    : Res['length']
+// 4. 
+type BinaryToDecimal<S extends string> = Convert<StringToTuple<S>>
+```
