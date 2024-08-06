@@ -3078,3 +3078,22 @@ Flag extends boolean = Count['length'] extends L ? true : false
         : NumberRange<L, H, [...Count, 0], [...R, Count['length']], true> // Flag 只有一次变 true 的机会，所以后续都不能依赖 Count['length'] extends L 的计算，只能传 Flag 或 true
     : NumberRange<L, H, [...Count, 0]> // count++
 ```
+
+# 8767. Combination
+
+```ts
+// expected to be `"foo" | "bar" | "baz" | "foo bar" | "foo bar baz" | "foo baz" | "foo baz bar" | "bar foo" | "bar foo baz" | "bar baz" | "bar baz foo" | "baz foo" | "baz foo bar" | "baz bar" | "baz bar foo"`
+type Keys = Combination<['foo', 'bar', 'baz']>
+```
+
+```ts
+type Combination<T extends string[]> = any
+// 1.
+type Combination<
+T extends string[],
+All = T[number],
+Item = All
+> = Item extends string
+    ? Item | `${Item} ${Combination<[], Exclude<All, Item>>}`
+    : never
+```
