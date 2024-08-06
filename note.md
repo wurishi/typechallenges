@@ -3036,3 +3036,45 @@ L extends U['length']
 // 2. 按位数
 // 07544-medium-construct-tuple 类似 6141 的从左到右，只不过这次每移一位是 X10
 ```
+
+# 7561. Subtract
+
+```ts
+Subtract<2, 1> // expect to be 1
+Subtract<1, 2> // expect to be never
+```
+
+```ts
+type Subtract<M extends number, S extends number> = any
+// 1. 数字计算需要用到['length']，所以先提供一个根据数字生成元组的工具类型
+type Tuple<T, Res extends any[] = []> = Res['length'] extends T
+    ? Res
+    : Tuple<T, [...Res, any]>
+// 2.
+type Subtract<M extends number, S extends number> =
+Tuple<M> extends [...Tuple<S>, ...infer Rest]
+    ? Rest['length']
+    : never
+```
+
+# 8640. Number Range
+
+```ts
+type result = NumberRange<2 , 9> //  | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+```
+
+```ts
+type NumberRange<L, H> = any
+// 1.
+type NumberRange<
+L extends number,
+H extends number,
+Count extends 0[] = [],
+R extends number[] = [],
+Flag extends boolean = Count['length'] extends L ? true : false
+> = Flag extends true
+    ? Count['length'] extends H
+        ? [...R, Count['length']][number]
+        : NumberRange<L, H, [...Count, 0], [...R, Count['length']], true> // Flag 只有一次变 true 的机会，所以后续都不能依赖 Count['length'] extends L 的计算，只能传 Flag 或 true
+    : NumberRange<L, H, [...Count, 0]> // count++
+```
