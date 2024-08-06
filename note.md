@@ -3123,3 +3123,18 @@ T extends [infer F extends number, ...infer R extends number[]]
         : TwoSum<R, U>
     : false
 ```
+
+# 8987. Subsequence
+
+```ts
+type A = Subsequence<[1, 2]> // [] | [1] | [2] | [1, 2]
+```
+
+```ts
+type Subsequence<T extends any[]> = any
+// 1.
+type Subsequence<T extends any[]> =
+T extends [infer F, ...infer R]
+    ? SubSequence<R> | [F, ...Subsequence<R>]
+    : T
+```
