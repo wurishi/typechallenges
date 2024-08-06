@@ -3217,3 +3217,25 @@ U extends any[]
         : Assign<T, R>
     : Merge<T>
 ```
+
+# 9286. FirstUniqueCharIndex
+
+```ts
+FirstUniqueCharIndex<'leetcode'> // 0
+FirstUniqueCharIndex<'loveleetcode'> // 2
+```
+
+```ts
+type FirstUniqueCharIndex<T extends string> = any
+// 1.
+type FirstUniqueCharIndex<T extends string, A extends string[] = []> =
+T extends ''
+    ? -1 // 空字符串或者未找到返回 -1
+    : T extends `${infer F}${infer R}`
+        ? F extends A[number] // 字符是否在 A 转换成 Union 中
+            ? FirstUniqueCharIndex<R, [...A, F]>
+            : R extends `${string}${F}${string}` // 剩余字符中是否有 F
+                ? FirstUniqueCharIndex<R, [...A, F]>
+                : A['length']
+        : never
+```
