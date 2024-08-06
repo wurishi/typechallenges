@@ -3239,3 +3239,27 @@ T extends ''
                 : A['length']
         : never
 ```
+
+# 9384. Maximum
+
+```ts
+Maximum<[]> // never
+Maximum<[0, 2, 1]> // 2
+Maximum<[1, 20, 200, 150]> // 200
+```
+
+```ts
+type Maximum<T extends any[]> = any
+// 1.
+type Maximum<
+T extends any[], 
+U = T[number], 
+N extends any[] = []
+> = T extends []
+    ? never
+    : Equal<U, N['length']> extends true
+        ? U
+        : Maximum<T, (U extends N['length'] ? never : U), [...N, any]>
+// " 1|20|200|150 extends 20 ? never : U " ==>> " 1|200|150 "
+// N 不断的增加，U 不断的减少。当 U 只剩下一个时并且 Equal<U, N['length']> 就剩下了最大的一个数字
+```
