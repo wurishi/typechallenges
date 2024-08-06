@@ -3097,3 +3097,29 @@ Item = All
     ? Item | `${Item} ${Combination<[], Exclude<All, Item>>}`
     : never
 ```
+
+# 8804. 两数之和
+
+给定一个整数数组 nums 和一个目标整数 target, 如果 nums 数组中存在两个元素的和等于 target 返回 true, 否则返回 false
+
+```ts
+type TwoSum<T extends number[], U extends number> = any
+// 1. 类似通过数字生成元组，但这里要注意的是元组最后一个的情况类似 Add<1, []>，所以生成元组的工具类型要过滤掉这种情况 MakeCounter<never> === never
+type MakeCounter<
+T extends number,
+_Result extends 1[] = [],
+U = T
+> = U extends T
+    ? _Result['length'] extends U
+        ? _Result | MakeCounter<Exclude<T, U>>
+        : MakeCounter<U, [..._Result, 1]>
+    : never
+type SimpleAdd<T extends number, U extends number> = [...MakeCounter<T>, ...MakeCounter<U>]['length']
+// 2.
+type TwoSum<T extends number[], U extends number> =
+T extends [infer F extends number, ...infer R extends number[]]
+    ? U extends SimpleAdd<F, R[number]>
+        ? true
+        : TwoSum<R, U>
+    : false
+```
