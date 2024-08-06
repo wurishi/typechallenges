@@ -3182,3 +3182,38 @@ type AllDate =
 
 type ValidDate<T extends string> = T extends AllDate ? true : false
 ```
+
+# 9160. Assign
+
+```ts
+type Target = {
+  a: 'a'
+}
+
+type Origin1 = {
+  b: 'b'
+}
+
+// type Result = Assign<Target, [Origin1]>
+type Result = {
+  a: 'a'
+  b: 'b'
+}
+```
+
+```ts
+type Assign<T extends Record<string, unknown>, U> = any
+// 1.
+type Merge<T> = {
+    [K in keyof T]: T[K]
+}
+// 2. 规则是覆盖，所以不能使用 & 合并，改为 Omit<T, keyof F> & F，即去掉 T 中 所有 F 有的 key，再合并 F
+type Assign<
+T extends Record<string, unknown>,
+U extends any[]
+> = U extends [infer F, ...infer R]
+    ? F extends Record<string, unknown>
+        ? Assign<Omit<T, keyof F> & F, R>
+        : Assign<T, R>
+    : Merge<T>
+```
