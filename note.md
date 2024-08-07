@@ -3440,3 +3440,41 @@ type FizzBuzz<N extends number, R extends unknown[] = [], T extends unknown[] = 
     ? R
     : FizzBuzz<N, [...R, `${(IsDivByThree<T> | IsDivByFive<T>) extends false ? T['length'] : ''}${IsDivByThree<T> extends true ? 'Fizz' : ''}${IsDivByFive<T> extends true ? 'Buzz' : ''}`]>
 ```
+
+# 14188. Run-length encoding
+
+Given a string sequence of a letters f.e. AAABCCXXXXXXY. Return run-length encoded string 3AB2C6XY. Also make a decoder for that string.
+
+```ts
+// 1. Encode
+type Help<Count extends unknown[], S extends string> =
+Count['length'] extends 1
+    ? S
+    : `${Count['length']}${S}`
+
+type Encode<
+S extends string,
+Last extends string = '',
+Count extends 0[] = [],
+Result extends string = ''
+> = S extends `${infer F}${infer Rest}`
+    ? Last extends ''
+        ? Encode<Rest, F, [0], Result>
+        : F extends Last
+            ? Encode<Rest, Last, [...Count, 0], Result>
+            : Encode<Rest, F, [0], `${Result}${Help<Count, Last>}`>
+    : `${Result}${Help<Count, Last>}`
+
+// 2. Decode
+type Decode<
+S extends string,
+Count extends 0[] = [],
+Result extends string = ''
+> = S extends `${infer N extends number}${infer C}${infer Rest}`
+    ? Count['length'] extends N
+        ? Decode<Rest, [], Result>
+        : Decode<S, [...Count, 0], `${Result}${C}`>
+    : S extends `${infer C}${infer Rest}`
+        ? Decode<Rest, [], `${Result}${C}`>
+        : Result
+```
