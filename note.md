@@ -3397,3 +3397,16 @@ type Integer<T extends number> = `${T}` extends `${bigint}`
     ? T
     : never
 ```
+
+# 13580. Replace Union
+
+```ts
+type UnionReplace<T, U extends [any, any][]> = any
+// 1.
+type UnionReplace<T, U extends [any, any][]> =
+U extends [infer F, ...infer Rest extends [any, any][]]
+    ? F extends [T, infer Replace]
+        ? UnionReplace<Exclude<T, F[0]> | Replace, Rest>
+        : UnionReplace<T, Rest>
+    : T
+```
