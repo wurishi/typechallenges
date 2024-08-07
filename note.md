@@ -3332,3 +3332,21 @@ type GetMiddleElement<T> = T extends [infer L, ...infer M, infer R]
         : GetMiddleElement<M>
     : T
 ```
+
+# 9898. 找出目标数组中只出现过一次的元素
+
+找出目标数组中只出现过一次的元素。例如：输入[1,2,2,3,3,4,5,6,6,6]，输出[1,4,5]
+
+```ts
+type FindEles<T extends any[]> = any
+// 1.
+type FindElse<
+T extends any[],
+Result extends any[] = [],
+Other extends any[] = []
+> = T extends [infer F, ...infer Rest]
+    ? F extends [...Rest, ...Other][number]
+        ? FindEles<Rest, Result, [...Other, F]>
+        : FindEles<Rest, [...Result, F], [...Other, F]> // 也可以直接写 Other，因为 F 已经确认是唯一的了
+    : Result
+```
