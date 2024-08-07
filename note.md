@@ -3410,3 +3410,33 @@ U extends [infer F, ...infer Rest extends [any, any][]]
         : UnionReplace<T, Rest>
     : T
 ```
+
+# 14080. FizzBuzz
+
+Print "Fizz" if an integer is divisible by 3;
+Print "Buzz" if an integer is divisible by 5;
+Print "FizzBuzz" if an integer is divisible by both 3 and 5.
+For example, for N = 20, the output should be:
+
+```
+1, 2, Fizz, 4, Buzz, Fizz, 7, 8, Fizz, Buzz, 11, Fizz, 13, 14, FizzBuzz, 16, 17, Fizz, 19, Buzz
+```
+
+```ts
+type FizzBuzz<N extends number> = any
+// 1. 3 和 5 的工具类型
+type IsDivByThree<T extends unknown[]> = T extends [...infer S, unknown, unknown, unknown]
+    ? S['length'] extends 0
+        ? true
+        : IsDivByThree<S>
+    : false
+type IsDivByFive<T extends unknown[]> = T extends [...infer S, unknown, unknown, unknown, unknown, unknown]
+    ? S extends []
+        ? true
+        : IsDivByFive<S>
+    : false
+// 2. 
+type FizzBuzz<N extends number, R extends unknown[] = [], T extends unknown[] = [...R, unknown]> = N extends R['length']
+    ? R
+    : FizzBuzz<N, [...R, `${(IsDivByThree<T> | IsDivByFive<T>) extends false ? T['length'] : ''}${IsDivByThree<T> extends true ? 'Fizz' : ''}${IsDivByFive<T> extends true ? 'Buzz' : ''}`]>
+```
