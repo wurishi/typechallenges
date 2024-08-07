@@ -3350,3 +3350,28 @@ Other extends any[] = []
         : FindEles<Rest, [...Result, F], [...Other, F]> // 也可以直接写 Other，因为 F 已经确认是唯一的了
     : Result
 ```
+
+# 9989. 统计数组中的元素个数
+
+通过实现一个CountElementNumberToObject方法，统计数组中相同元素的个数
+
+```ts
+type CountElementNumberToObject<T> = any
+// 1. 先提供一个将数组扁平化的工具类型
+type Flat<T> = T extends [infer F, ...infer R]
+    ? F extends any[]
+        ? [...Flat<F>, ...Flat<R>]
+        : [F, ...Flat<R>]
+    : T
+// 2. 再提供一个从元组中 Count 指定值的工具类型
+type Count<T extends any[], V, C extends any[] = []> =
+T extends [infer F, ...infer R]
+    ? F extends V
+        ? Count<R, V, [...C, any]>
+        : Count<R, V, C>
+    : C['length']
+// 3.
+type CountElementNumberToObject<T extends any[], U extends any[] = Flat<T>> = {
+    [K in U[number]]: Count<U, K>
+}
+```
