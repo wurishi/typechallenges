@@ -3375,3 +3375,25 @@ type CountElementNumberToObject<T extends any[], U extends any[] = Flat<T>> = {
     [K in U[number]]: Count<U, K>
 }
 ```
+
+# 10969. 整数
+
+请完成类型 `Integer<T>`，类型 T 继承于 number，如果 T 是一个整数则返回它，否则返回 never。
+
+```ts
+type Integer<T> = any
+// 1.
+type Integer<T extends number> = `${T}` extends `${string}.${string}`
+    ? never
+    : T
+// 2. Equal<Integer<typeof x>, never>> 无法通过，因为 typeof x -> number
+type Integer<T extends number> = number extends T // 增加单独判断
+    ? never
+    : `${T}` extends `${string}.${string}`
+        ? never
+        : T
+// 3. 或者用 bigint 一步到胃
+type Integer<T extends number> = `${T}` extends `${bigint}`
+    ? T
+    : never
+```
