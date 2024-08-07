@@ -3281,3 +3281,33 @@ type ParseUrlParams<T> = T extends `${string}:${infer R}` // 取第1个:后的�
         : R
     : never
 ```
+
+# 9775. Capitalize Nest Object Keys
+
+```ts
+type CapitalizeNestObjectKeys<T> = any
+// 1. K in keyof T 也可以用来遍历 []
+type CapitalizeNestObjectKeys<T> = T extends any[]
+    ? {
+        [K in keyof T]: CapitalizeNestObjectKeys<T[K]>
+    }
+    : T extends Record<any, any>
+        ? {
+            [K in keyof T as Capitalize<K & string>]: CapitalizeNestObjectKeys<T[K]>
+        }
+        : T
+// 2. 或者使用 [infer F, ...infer R] 递归遍历 []
+type CapitalizeNestObjectKeys<T> = T extends [infer F, ...infer R]
+    ? [
+        CapitalizeNestObjectKeys<F>,
+        ...(R extends []
+                ? []
+                : CapitalizeNestObjectKeys<R> extends any[]
+                    ? CapitalizeNestObjectKeys<R>
+                    : never
+        )
+    ]
+    : {
+        [K in keyof T as K extends string ? Capitalize<K> : K]: CapitalizeNestObjectKeys<T[K]>
+    }
+```
