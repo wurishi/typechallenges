@@ -3263,3 +3263,21 @@ N extends any[] = []
 // " 1|20|200|150 extends 20 ? never : U " ==>> " 1|200|150 "
 // N 不断的增加，U 不断的减少。当 U 只剩下一个时并且 Equal<U, N['length']> 就剩下了最大的一个数字
 ```
+
+# 9616. Parse URL Params
+
+```ts
+ParseUrlParams<':id'> // id
+ParseUrlParams<'posts/:id'> // id
+ParseUrlParams<'posts/:id/:user'> // id | user
+```
+
+```ts
+type ParseUrlParams<T> = any
+// 1.
+type ParseUrlParams<T> = T extends `${string}:${infer R}` // 取第1个:后的所有
+    ? R extends `${infer P}/${infer L}` // P在:之后/之前，算一个 param
+        ? P | ParseUrlParams<L>
+        : R
+    : never
+```
