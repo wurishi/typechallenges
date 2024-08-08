@@ -3535,3 +3535,25 @@ type ToPrimitive<T> = T extends object // object包含函数和对象
         ? P
         : T
 ```
+
+# 17973. DeepMutable
+
+实现一个通用的 DeepMutable ，它使对象的每个属性，及其递归的子属性 - 可变。
+
+```ts
+type DeepMutable = any
+// 1.
+type DeepMutable<T> = T extends Record<string, any>
+    ? {
+        -readonly [K in keyof T]: DeepMutable<T[K]>
+    }
+    : T
+// 2. 因为测试用例中子类型有 () => 1 这种，所以要处理一下 Function
+type DeepMutable<T> = T extends Record<string, any>
+    ? {
+        -readonly [K in keyof T]: T[K] extends (...args: never[]) => unknown // 或者 T[K] extends Function
+            ? T[K]
+            : DeepMutable<T[K]>
+    }
+    : T
+```
