@@ -3602,3 +3602,19 @@ type Filter<T extends any[], P> = T extends [infer F, ...infer Rest]
         : Filter<Rest, P>
     : []
 ```
+
+# 19458. SnakeCase
+
+```ts
+type res1 = SnakeCase<"hello">; // => "hello"
+type res2 = SnakeCase<"userName">; // => "user_name"
+type res3 = SnakeCase<"getElementById">; // => "get_element_by_id"
+```
+
+```ts
+type SnakeCase<T> = any
+// 1. 
+type SnakeCase<T> = T extends `${infer S}${infer Rest}`
+    ? `${S extends Uppercase<S> ? `_${Lowercase<S>}` : S}${SnakeCase<Rest>}`
+    : ''
+```
