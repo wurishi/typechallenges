@@ -3513,3 +3513,25 @@ type Path<T> = T extends Record<PropertyKey, unknown>
     }[keyof T]
     : never
 ```
+
+# 16259. 将类型为字面类型（标签类型）的属性，转换为基本类型。
+
+```ts
+type PersonInfo = { name: 'Tom', age: 30, married: false, addr: { home: '123456', phone: '13111111111' } }
+
+// 要求结果如下： type PersonInfo = { name: string, age: number, married: boolean, addr: { home: string, phone: string } }
+```
+
+```ts
+type ToPrimitive = any
+// 1.
+type ToPrimitive<T> = T extends object // object包含函数和对象
+    ? T extends (...args: never[]) => unknown
+        ? Function
+        : {
+            [K in keyof T]: ToPrimitive<T[K]>
+        }
+    : T extends { valueOf: () => infer P } // 如果 Number/String 这种包装对象类型，通过 valueOf 方法可以获得原始类型
+        ? P
+        : T
+```
