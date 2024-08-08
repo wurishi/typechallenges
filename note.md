@@ -3478,3 +3478,38 @@ Result extends string = ''
         ? Decode<Rest, [], `${Result}${C}`>
         : Result
 ```
+
+# 15260. Tree path array
+
+```ts
+declare const example: {
+    foo: {
+        bar: {
+            a: string;
+        };
+        baz: {
+            b: number
+            c: number
+        }
+    };
+}
+
+// Possible solutions: 
+// []
+// ['foo']
+// ['foo', 'bar']
+// ['foo', 'bar', 'a']
+// ['foo', 'baz']
+// ['foo', 'baz', 'b']
+// ['foo', 'baz', 'c']
+```
+
+```ts
+type Path<T> = any
+// 1.
+type Path<T> = T extends Record<PropertyKey, unknown>
+    ? {
+        [P in keyof T]: [P, ...Path<T[P]>] | [P]
+    }[keyof T]
+    : never
+```
