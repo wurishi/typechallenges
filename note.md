@@ -3618,3 +3618,22 @@ type SnakeCase<T> = T extends `${infer S}${infer Rest}`
     ? `${S extends Uppercase<S> ? `_${Lowercase<S>}` : S}${SnakeCase<Rest>}`
     : ''
 ```
+
+# 21104. FindAll
+
+```ts
+type FindAll<T extends string, P extends string> = any
+// 1.
+type FindAll<
+T extends string,
+P extends string,
+Index extends 0[] = [],
+Result extends number[] = []
+> = P extends '' // 处理 testcase 中查找''的问题
+    ? Result
+    : T extends `${string}${infer Rest}` // 字符串至少有一个
+        ? T extends `${P}${string}` // 包含查找字符
+            ? FindAll<Rest, P, [...Index, 0], [...Result, Index['length']]>
+            : FindAll<Rest, P, [...Index, 0], Result>
+        : Result
+```
