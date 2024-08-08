@@ -3581,3 +3581,24 @@ type All<T extends any[], V> = T[number] extends V
     ? true
     : false
 ```
+
+# 18220. Filter
+
+Implement the type `Filter<T, Predicate>` takes an Array T, primitive type or union primitive type Predicate and returns an Array include the elements of Predicate.
+
+```ts
+type Filter<T extends any[], P> = []
+// 1.
+type Filter<T extends any[], P, R extends any[] = []> =
+T extends [infer F, ...infer Rest]
+    ? F extends P
+        ? Filter<Rest, P, [...R, F]>
+        : Filter<Rest, P, R>
+    : R
+// 2. 或者不使用 R 辅助保存
+type Filter<T extends any[], P> = T extends [infer F, ...infer Rest]
+    ? F extends P
+        ? [F, ...Filter<Rest, P>]
+        : Filter<Rest, P>
+    : []
+```
