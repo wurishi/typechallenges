@@ -38,6 +38,8 @@ type MyOmit<T, K> = {
     [key in keyof T as key extends K ? never : key]: T[key]
 }
 
+type A = MyOmit<Todo, 'description' | 'invalid'>
+
 /* _____________ 测试用例 _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'
 

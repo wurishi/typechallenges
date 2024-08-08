@@ -56,7 +56,7 @@
 
 // type DeepMutable = any
 
-type DeepMutable<T> = T extends Record<string, any>
+type DeepMutable<T extends object> = T extends Record<string, any>
     ? {
         -readonly [K in keyof T]: T[K] extends (...args: never[]) => unknown
             ? T[K]
@@ -66,7 +66,7 @@ type DeepMutable<T> = T extends Record<string, any>
 
 type A = DeepMutable<Test1>
 type B = DeepMutable<Test2>
-type C = DeepMutable<'string'>
+// type C = DeepMutable<'string'>
 
 /* _____________ 测试用例 _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'

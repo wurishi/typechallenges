@@ -3557,3 +3557,27 @@ type DeepMutable<T> = T extends Record<string, any>
     }
     : T
 ```
+
+# 18142. All
+
+```ts
+type Test1 = [1, 1, 1]
+type Test2 = [1, 1, 2]
+
+type Todo = All<Test1, 1> // should be same as true
+type Todo2 = All<Test2, 1> // should be same as false
+```
+
+```ts
+type All = any
+// 1. 需要自己写一个 IsEqual
+type All<T extends any[], V> = T extends [infer F, ...infer Rest]
+    ? IsEqual<V, F> extends true
+        ? All<Rest, F>
+        : false
+    : true
+// 2. 或者如果没有特殊类型如 union, any, unknown 等，则可以使用这种方法
+type All<T extends any[], V> = T[number] extends V
+    ? true
+    : false
+```
