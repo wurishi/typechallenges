@@ -3636,4 +3636,18 @@ Result extends number[] = []
             ? FindAll<Rest, P, [...Index, 0], [...Result, Index['length']]>
             : FindAll<Rest, P, [...Index, 0], Result>
         : Result
+// 2. 或者使用一个辅助工具类型在判断时计算 Index
+type GetStrLen<S, C extends 0[] = []> = S extends `${string}${infer Rest}`
+    ? GetStrLen<Rest, [...C, 0]>
+    : C['length']
+type FindAll<
+T extends string,
+P extends string,
+S extends string = '', // 已经检查过的字符串
+Result extends number[] = []
+> = P extends ''
+    ? Result
+    : T extends `${S}${infer L}${P}${string}`
+        ? FindAll<T, P, `${S}${L}${P extends `${infer F}${string}` ? F : P}`, [...Result, GetStrLen<`${S}${L}`>]> // 这里已经检查过的字符串要一个一个字符追加，所以如果 P 字符串长度大于 1，那每次只取第一个字符
+        : Result
 ```

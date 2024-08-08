@@ -28,21 +28,48 @@ type Test<T> = T extends `${string}${infer A}POP`
 //     ? FindAll<`${L}${P}${R}`, P, [...Index, 0], L extends '' ? [...Result, Index['length']] : Result>
 //     : Result
 
+// type FindAll<
+// T extends string,
+// P extends string,
+// Index extends 0[] = [],
+// Result extends number[] = []
+// > = P extends ''
+//   ? Result
+//   : T extends `${string}${infer Rest}`
+//     ? T extends `${P}${string}`
+//       ? FindAll<Rest, P, [...Index, 0], [...Result, Index['length']]>
+//       : FindAll<Rest, P, [...Index, 0], Result>
+//     : Result
+
+type GetStrLen<S, C extends 0[] = []> = S extends `${string}${infer Rest}`
+  ? GetStrLen<Rest, [...C, 0]>
+  : C['length']
+
+type A1 = GetStrLen<'AAAA'>
+
 type FindAll<
 T extends string,
 P extends string,
-Index extends 0[] = [],
+S extends string = '',
 Result extends number[] = []
 > = P extends ''
   ? Result
-  : T extends `${string}${infer Rest}`
-    ? T extends `${P}${string}`
-      ? FindAll<Rest, P, [...Index, 0], [...Result, Index['length']]>
-      : FindAll<Rest, P, [...Index, 0], Result>
+  : T extends `${S}${infer L}${P}${string}`
+    ? FindAll<T, P, `${S}${L}${P extends `${infer F}${string}` ? F : P}`, [...Result, GetStrLen<`${S}${L}`>]>
     : Result
+
+// 你的答案
+// type getStrL<T extends string, U extends ''[] = []> = T extends `${any}${infer R}` ? getStrL<R, [...U, '']> : U['length']
+// type FindAll<T extends string, P extends string, S extends string = '', R extends number[] = []> =
+//   P extends '' ? [] :
+//   T extends `${S}${infer F}${P}${any}` ?
+//   FindAll<T, P, `${S}${F}${P extends `${infer F}${any}` ? F : P}`, [...R, getStrL<`${S}${F}`>]>
+//   : R
 
 type A = FindAll<'Collection of TypeScript type challenges', 'Type'>
 type B = FindAll<'AAAA', 'A'>
+type C = FindAll<'AAAA', 'AA'>
+type D = FindAll<'AAAAA', 'AAA'>
 
 /* _____________ Test Cases _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'
