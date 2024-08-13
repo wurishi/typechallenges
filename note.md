@@ -3777,3 +3777,10 @@ type IsNegativeNumber<T extends number> = number extends T
             ? true
             : false
 ```
+
+# 26401. JSON Schema to TypeScript
+
+```ts
+type JSONSchema2TS<T> = any
+// 1. 26401-medium-json-schema-to-typescript.ts
+```

@@ -33,6 +33,7 @@ type IsUnion<T, U = T> = T extends U
 type A1 = IsUnion<1>
 type A2 = IsUnion<1 | 2>
 type A3 = IsUnion<number>
+type A4 = [1 | 2] extends [1 | 2] ? true : false
 
 type IsNegativeNumber<T extends number> = number extends T
     ? never
