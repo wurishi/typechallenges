@@ -3826,3 +3826,37 @@ type CartesianProduct<T, U> = T extends T
         : never
     : never
 ```
+
+# 27932. MergeAll
+
+```ts
+type Foo = { a: 1; b: 2 }
+type Bar = { a: 2 }
+type Baz = { c: 3 }
+
+type Result = MergeAll<[Foo, Bar, Baz]> // expected to be { a: 1 | 2; b: 2; c: 3 }
+```
+
+```ts
+type MergeAll<XS> = any
+// 1.
+type MergeAll<
+XS extends object[],
+U = XS[number],
+Keys extends PropertyKey = U extends U ? keyof U : never
+> = {
+    [K in Keys]: U extends U ? U[K & keyof U] : never
+}
+// 2. 方案二
+type MergeAll<
+XS extends object[],
+Res = {}
+> = XS extends [infer F, ...infer Rest extends object[]]
+    ? MergeAll<
+        Rest
+        , Omit<Res, keyof F> & {
+            [P in keyof F]: P extends keyof Res ? F[P] | Res[P] : F[P]
+        }
+    >
+    : Omit<Res, never>
+```
