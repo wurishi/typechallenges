@@ -3793,3 +3793,20 @@ Given a number, your type should return its square.
 type Square<N extends number> = number
 // 1. 27133-medium-square.ts
 ```
+
+# 27152. Triangular number
+
+Given a number N, find the Nth triangular number, `i.e. 1 + 2 + 3 + ... + N`
+
+```ts
+type Triangular<N extends number> = any
+// 1.
+type Triangular<
+N extends number,
+Count extends number[] = [],
+R extends number[] = []
+> = Count['length'] extends N
+    ? R['length']
+    : Triangular<N, [...Count, 0], [...R, ...Count, 0]>
+```
+
