@@ -3724,3 +3724,37 @@ T extends readonly [infer F, ...infer Rest]
         : [F, ...ReplaceFirst<Rest, S, R>]
     : [] // 如果返回 never，会因为 ...never 导致返回值直接变 never
 ```
+
+# 25270. Transpose
+
+```ts
+type Matrix = Transpose <[[1]]>; // expected to be [[1]]
+type Matrix1 = Transpose <[[1, 2], [3, 4]]>; // expected to be [[1, 3], [2, 4]]
+type Matrix2 = Transpose <[[1, 2, 3], [4, 5, 6]]>; // expected to be [[1, 4], [2, 5], [3, 6]]
+```
+
+```ts
+type Transpose<M extends number[][]> = any
+// 1. 以 M[0] 为基准，遍历后面的每个数组，并把对应位置元素合并
+type Transpose<
+M extends number[][], 
+R = M['length'] extends 0 ? [] : M[0]
+> = {
+    [X in keyof R]: {
+        [Y in keyof M]: X extends keyof M[Y] ? M[Y][X] : never
+    }
+}
+// 2. 方案二：创建一个工具类型用来取多个数组同一索引的值并组成元组
+type Temp<M extends number[][], Index extends number> =
+M extends [infer F extends number[], ...infer Rest extends number[][]]
+    ? [F[Index], ...Temp<Rest, Index>]
+    : []
+// 3. 然后仍然以 M[0] 为基准，按照对应位置合并
+type Transpose<
+M extends number[][],
+Count extends 0[] = [],
+F extends number[] = M['length'] extends 0 ? [] : M[0]
+> = F['length'] extends Count['length']
+    ? []
+    : [Temp<M, Count['length']>, ...Transpose<M, [...Count, 0]>]
+```
