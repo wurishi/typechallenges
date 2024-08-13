@@ -3664,3 +3664,48 @@ type Combs<T extends any[]> = T extends [infer F extends string, ...infer Rest e
     ? `${F} ${Rest[number]}` | Combs<Rest>
     : never
 ```
+
+# 21220. Permutations of Tuple
+
+```ts
+PermutationsOfTuple<[1, number, unknown]>
+// Should return:
+// | [1, number, unknown]
+// | [1, unknown, number]
+// | [number, 1, unknown]
+// | [unknown, 1, number]
+// | [number, unknown, 1]
+// | [unknown, number ,1]
+```
+
+```ts
+type PermutationsOfTuple<T extends unknown[]> = any
+// 1. 要处理 unknow, any 等，需要给元素套一层[]，否则 ([any, 1])[number] === any 但其实我们期望的是 any | 1
+type WrapArray<T extends any[]> = T extends [infer S, ...infer O]
+    ? [[S], ...WrapArray<O>]
+    : []
+// 2. 然后 Exclude<[any] | [unknown], [unknown]> 的结果是 never 所以需要自己写一个 MyExclude
+type MyEqual<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
+    ? true
+    : false
+type MyExclude<T extends any[], U> = T extends [infer S, ...infer O]
+    ? (MyEqual<S, U> extends true
+        ? MyExclude<O, U>
+        : [S, ...MyExclude<O, U>]
+    )
+    : []
+// 3. 最后因为使用了 WrapArray，取结果的时候别忘了使用 U[0]
+type MyPermutationsOfTuple<T extends any[], U = T[number]> =
+[U] extends [never]
+    ? []
+    : (U extends U
+        ? [
+            U extends any[]
+                ? U[0]
+                : never
+            , ...MyPermutationOfTuple<MyExclude<T, U>>
+        ]
+        : []
+    )
+type PermutationOfTuple<T extends unknown[], U extends unknown[] = WrapArray<T>> = MyPermutationsOfTuple<U>
+```
