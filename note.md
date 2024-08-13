@@ -3758,3 +3758,22 @@ F extends number[] = M['length'] extends 0 ? [] : M[0]
     ? []
     : [Temp<M, Count['length']>, ...Transpose<M, [...Count, 0]>]
 ```
+
+# 25747. IsNegativeNumber
+
+```ts
+type IsNegativeNumber<T extends number> = any
+// 1. 用 `${T}` extends `-${any}` 就可以判断是不是负数了，主要是得解决测试用例中的 -1 | -2 这种联合类型的判断。
+type IsUnion<T, U = T> = T extends U
+    ? [U] extends [T]
+        ? false
+        : true
+    : never
+type IsNegativeNumber<T extends number> = number extends T
+    ? never
+    : IsUnion<T> extends true
+        ? never
+        : `${T}` extends `-${any}`
+            ? true
+            : false
+```
