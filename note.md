@@ -3709,3 +3709,18 @@ type MyPermutationsOfTuple<T extends any[], U = T[number]> =
     )
 type PermutationOfTuple<T extends unknown[], U extends unknown[] = WrapArray<T>> = MyPermutationsOfTuple<U>
 ```
+
+# 25170. Replace First
+
+Implement the type `ReplaceFirst<T, S, R>` which will replace the first occurrence of S in a tuple T with R. If no such S exists in T, the result should be T.
+
+```ts
+type ReplaceFirst<T extends readonly unknown[], S, R> = any
+// 1.
+type ReplaceFirst<T extends readonly unknown[], S, R> =
+T extends [infer F, ...infer Rest]
+    ? F extends S
+        ? [R, ...Rest]
+        : [F, ...ReplaceFirst<Rest, S, R>]
+    : [] // 如果返回 never，会因为 ...never 导致返回值直接变 never
+```
