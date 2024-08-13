@@ -3810,3 +3810,19 @@ R extends number[] = []
     : Triangular<N, [...Count, 0], [...R, ...Count, 0]>
 ```
 
+# 27862. CartesianProduct
+
+```ts
+CartesianProduct<1 | 2, 'a' | 'b'> 
+// [1, 'a'] | [2, 'a'] | [1, 'b'] | [2, 'b']
+```
+
+```ts
+type CartesianProduct<T, U> = any
+// 1. 对联合类型进行遍历时会触发循环，所以遍历 T，U 即可
+type CartesianProduct<T, U> = T extends T
+    ? U extends U
+        ? [T, U]
+        : never
+    : never
+```
