@@ -3718,7 +3718,7 @@ Implement the type `ReplaceFirst<T, S, R>` which will replace the first occurren
 type ReplaceFirst<T extends readonly unknown[], S, R> = any
 // 1.
 type ReplaceFirst<T extends readonly unknown[], S, R> =
-T extends [infer F, ...infer Rest]
+T extends readonly [infer F, ...infer Rest]
     ? F extends S
         ? [R, ...Rest]
         : [F, ...ReplaceFirst<Rest, S, R>]

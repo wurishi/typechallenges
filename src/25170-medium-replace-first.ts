@@ -14,7 +14,7 @@
 
 // type ReplaceFirst<T extends readonly unknown[], S, R> = any
 
-type ReplaceFirst<T extends readonly unknown[], S, R> = T extends [infer F, ...infer Rest]
+type ReplaceFirst<T extends readonly unknown[], S, R> = T extends readonly [infer F, ...infer Rest]
     ? F extends S
         ? [R, ...Rest]
         : [F, ...ReplaceFirst<Rest, S, R>]
@@ -22,8 +22,9 @@ type ReplaceFirst<T extends readonly unknown[], S, R> = T extends [infer F, ...i
 
 type Test<T> = T extends [infer F, ...infer R]
     ? ['a', F, ...Test<R>]
-    : T
+    : []
 type T1 = Test<[1, 2, 3]>
+type T2 = ReplaceFirst<['six', 'eight', 'ten'], 'eleven', 'twelve'>
 
 /* _____________ Test Cases _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'
