@@ -3784,3 +3784,12 @@ type IsNegativeNumber<T extends number> = number extends T
 type JSONSchema2TS<T> = any
 // 1. 26401-medium-json-schema-to-typescript.ts
 ```
+
+# 27133. Square
+
+Given a number, your type should return its square.
+
+```ts
+type Square<N extends number> = number
+// 1. 27133-medium-square.ts
+```
