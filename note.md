@@ -3924,3 +3924,26 @@ type PublicType<T extends object> = {
     [K in keyof T as K extends `_${string}` ? never : K]: T[K]
 }
 ```
+
+# 29650. ExtractToObject
+
+```ts
+type Test = { id: '1', myProp: { foo: '2' }}
+type Result = ExtractToObject<Test, 'myProp'> // expected to be { id: '1', foo: '2' }
+```
+
+```ts
+type ExtractToObject<T, U> = any
+// 1.
+type ExtractToObject<T, U extends keyof T> =
+Omit<Omit<T, U> & T[U], never>
+// 2. 或者 K 遍历除了 U 之外的 key 和 T[U] 的 key
+type ExtractToObject<
+T extends Record<PropertyKey, any>,
+U extends keyof T // 如果使用不存在的 key, 会报一个编译错误。或者这里用 U extends string 代替
+> = {
+    [K in (keyof Omit<T, U> | keyof T[U])]: K extends keyof T 
+        ? T[K] 
+        : T[U][K]
+}
+```
