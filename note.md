@@ -3947,3 +3947,34 @@ U extends keyof T // 如果使用不存在的 key, 会报一个编译错误。�
         : T[U][K]
 }
 ```
+
+# 29785. Deep Omit
+
+```ts
+type obj = {
+  person: {
+    name: string;
+    age: {
+      value: number
+    }
+  }
+}
+
+type test1 = DeepOmit<obj, 'person'>    // {}
+type test2 = DeepOmit<obj, 'person.name'> // { person: { age: { value: number } } }
+type test3 = DeepOmit<obj, 'name'> // { person: { name: string; age: { value: number } } }
+type test4 = DeepOmit<obj, 'person.age.value'> // { person: { name: string; age: {} } }
+```
+
+```ts
+type DeepOmit = any
+// 1.
+type DeepOmit<O, P extends string> =
+P extends `${infer K}.${infer Rest}`
+    ? {
+        [Key in keyof O]: Key extends K
+            ? DeepOmit<O[Key], Rest>
+            : O[Key]
+    }
+    : Omit<O, P>
+```
