@@ -3887,3 +3887,28 @@ T extends [infer F, ...infer Rest]
         : CheckRepeatedTuple<Rest>
     : false
 ```
+
+# 28143. OptionalUndefined
+
+```ts
+OptionalUndefined<{ value: string | undefined, description: string }>
+// { value?: string | undefined; description: string }
+
+OptionalUndefined<{ value: string | undefined, description: string | undefined, author: string | undefined }, 'description' | 'author'>
+// { value: string | undefined; description?: string | undefined, author?: string | undefined }
+```
+
+```ts
+type OptionalUndefined<T, Props> = any
+// 1.
+type OptionalUndefined<T, Props extends keyof T = keyof T> =
+Omit<
+    Omit<T, Props>
+    & {
+        [K in Props as undefined extends T[K] ? K : never]?: T[K]
+    }
+    & {
+        [K in Props as undefined extends T[K] ? never : K]: T[K]
+    }
+    , never>
+```
