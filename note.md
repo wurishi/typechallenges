@@ -4015,3 +4015,13 @@ function uniqueItems<const T>(items: T extends GenerateHintTuple<T>
     return items
 }
 ```
+
+# 30301. IsOdd
+
+return true is a number is odd
+
+```ts
+type IsOdd<T extends number> = any
+// 1. 小数如2.3 或 科学计数3e23 暂不支持
+type IsOdd<T extends number> = `${T}` extends `${number | ''}${1 | 3 | 5 | 7 | 9}` ? true : false
+```
