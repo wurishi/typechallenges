@@ -4025,3 +4025,25 @@ type IsOdd<T extends number> = any
 // 1. 小数如2.3 或 科学计数3e23 暂不支持
 type IsOdd<T extends number> = `${T}` extends `${number | ''}${1 | 3 | 5 | 7 | 9}` ? true : false
 ```
+
+# 30430. Tower of hanoi
+
+```ts
+type Hanoi<N extends number, From = 'A', To = 'B', Intermediate = 'C'> = any
+// 1.
+type Hanoi<
+N extends number,
+From = 'A',
+To = 'B',
+Intermediate = 'C',
+Index extends 0[] = []
+> = Index['length'] extends N
+    ? []
+    : [
+        ...Hanoi<N, From, Intermediate, To, [...Index, 0]>,
+        [From, To],
+        ...Hanoi<N, Intermediate, To, From, [...Index, 0]>
+    ]
+```
+
+https://github.com/type-challenges/type-challenges/tree/main/questions/30575-hard-bitwisexor
