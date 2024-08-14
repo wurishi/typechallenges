@@ -3860,3 +3860,30 @@ Res = {}
     >
     : Omit<Res, never>
 ```
+
+# 27958. CheckRepeatedTuple
+
+判断一个元组类型中是否有相同的成员
+
+```ts
+type CheckRepeatedTuple<[1, 2, 3]>   // false
+type CheckRepeatedTuple<[1, 2, 1]>   // true
+```
+
+```ts
+type CheckRepeatedTuple<T extends unknown[]> = any
+// 1.
+type CheckRepeatedTuple<T extends unknown[]> =
+T extends [infer F, ...infer Rest]
+    ? F extends Rest[number]
+        ? true
+        : CheckRepeatedTuple<Rest>
+    : false
+// 2. 如果要解决 CheckRepeatedTuple<[1, number]> == true 的问题，自己写一个 Equal 即可，但是 [number, number] 无法正确返回
+type CheckRepeatedTuple<T extends unknown[]> =
+T extends [infer F, ...infer Rest]
+    ? IsEqual<F, Rest[number]> extends true
+        ? true
+        : CheckRepeatedTuple<Rest>
+    : false
+```
