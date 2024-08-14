@@ -3978,3 +3978,40 @@ P extends `${infer K}.${infer Rest}`
     }
     : Omit<O, P>
 ```
+
+# 30178. Unique Items
+
+```ts
+// Ensures `n` is a positive number
+function positive<const N extends number>(n: `${N}` extends `-${string}` ? never : N) {
+  return n
+}
+
+const a = positive(1) // Ok
+const b = positive(-1) // Error, -1 is not assignable to never
+```
+
+```ts
+function uniqueItems(items: any[]) {
+    return items
+}
+// 1. 利用 uniqueItems<const T> 强制 items 变成 readonly []，
+type Ensure<T, P extends unknown[] = []> =
+T extends [infer F, ...infer R]
+    ? Ensure<R, [...P, F extends P[number] ? never : F]>
+    : P extends T ? P : P
+function uniqueItems<const T>(items: Ensure<T>) {
+    return items
+}
+// 2. 另一种利用联合类型的方式
+type GenerateHintTuple<T, U = never> =
+T extends [infer F, ...infer Rest]
+    ? [F extends U ? never : F, ...GenerateHintTuple<Rest, U | F>]
+    : []
+function uniqueItems<const T>(items: T extends GenerateHintTuple<T>
+    ? T
+    : GenerateHintTuple<T>
+) {
+    return items
+}
+```
