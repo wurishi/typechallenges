@@ -3912,3 +3912,15 @@ Omit<
     }
     , never>
 ```
+
+# 28333. Public Type
+
+Remove the key starting with _ from given type T.
+
+```ts
+type PublicType<T extends object> = any
+// 1.
+type PublicType<T extends object> = {
+    [K in keyof T as K extends `_${string}` ? never : K]: T[K]
+}
+```
