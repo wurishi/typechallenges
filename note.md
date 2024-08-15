@@ -4069,3 +4069,32 @@ S1 extends ''
             ? `${BitwiseXOR<Rest1, Rest2>}${XorLowestBit<S1, S2>}`
             : never
 ```
+
+# 30958. Pascal's triangle
+
+```ts
+type Pascal<N extends number> = any
+// 1. 30958-medium-pascals-triangle.ts
+```
+
+# 30970. IsFixedStringLiteralType
+
+```ts
+type IsFixedStringLiteralType<S extends string> = any
+// 1.
+type SingleCheck<S> = S extends ''
+    ? true
+    : S extends `${infer C}${infer Rest}`
+        ? '0' | '1' extends C
+            ? false
+            : SingleCheck<Rest>
+        : false
+type IsFixedStringLiteralType<S extends string, T = S> =
+[S] extends [never]
+    ? false
+    : S extends unknown
+        ? [T] extends [S]
+            ? SingleCheck<S>
+            : false
+        : false
+```
