@@ -4046,4 +4046,26 @@ Index extends 0[] = []
     ]
 ```
 
-https://github.com/type-challenges/type-challenges/tree/main/questions/30575-hard-bitwisexor
+# 30575. BitwiseXOR
+
+```ts
+BitwiseXOR<'0','1'> // expect '1'
+BitwiseXOR<'1','1'> // expect '0'
+BitwiseXOR<'10','1'>  // expect '11'
+```
+
+```ts
+type BitwiseXOR<S1 extends string, S2 extends string> = any
+// 1. 计算二个字符串最后一位的位异或工具类型
+type XorLowestBit<S1 extends string, S2 extends string> =
+[S1, S2] extends [`${string}0`, `${string}1`] | [`${string}1`, `${string}0`] ? '1' : '0'
+// 2. 一位一位计算，因为 `` 特性，没法单独拿到最后一位，所以 XOR 只能是以 `${string}0` | `${string}1` 的形式
+type BitwiseXOR<S1 extends string, S2 extends string> =
+S1 extends ''
+    ? S2
+    : S2 extends ''
+        ? S1
+        : [S1, S2] extends [`${infer Rest1}${'0' | '1'}`, `${infer Rest2}${'0' | '1'}`]
+            ? `${BitwiseXOR<Rest1, Rest2>}${XorLowestBit<S1, S2>}`
+            : never
+```
