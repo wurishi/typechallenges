@@ -4098,3 +4098,58 @@ type IsFixedStringLiteralType<S extends string, T = S> =
             : false
         : false
 ```
+
+# 31447. CountReversePairs
+
+```ts
+type CountReversePairs<T extends number[]> = any
+// 1. 31447-extreme-countreversepairs.ts
+```
+
+# 31797. Sudoku
+
+```ts
+type SudokuSolved = any
+// 1. 31797-hard-sudoku.ts
+```
+
+# 31824. Length of String 3
+
+```ts
+type LengthOfString<S extends string> = any
+// 1. 答案有误
+```
+
+# 31997. Parameter Intersection
+
+```ts
+type IntersectParameters<
+    l extends readonly unknown[],
+    r extends readonly unknown[],
+> = l & r
+// 1. 31997-extreme-parameter-intersection.ts
+```
+
+# 32427. Unbox
+
+```ts
+Unbox<string> // string
+Unbox<()=>number> // number
+Unbox<boolean[]> // boolean
+Unbox<Promise<boolean>> // boolean
+```
+
+```ts
+type Unbox<T> = any
+// 1.
+type Unbox<T, Depth = 0, Count extends 0[] = [0]> =
+T extends ((...args: any[]) => infer R)
+    | (infer R)[]
+    | Promise<infer R>
+        ? Count['length'] extends Depth
+            ? R
+            : Unbox<R, Depth, [...Count, 0]>
+        : T
+```
+
+https://anvaka.github.io/ngraph.forcelayout/?graph=Miserables&timeStep=0.5&springLength=10&springCoefficient=0.8&dragCoefficient=0.9&dimensions=2&theta=0.8&gravity=-12
