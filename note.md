@@ -4152,4 +4152,41 @@ T extends ((...args: any[]) => infer R)
         : T
 ```
 
+# 32532. Binary Addition
+
+```ts
+type BinaryAdd<A extends Bit[], B extends Bit[]> = any
+// 1. 32532-hard-binary-addition.ts
+```
+
+# 33345. Dynamic Route
+
+```ts
+type DynamicRoute<T extends string> = any
+// 1. 33345-extreme-dynamic-route.ts
+```
+
+# 34007. Compare Array Length
+
+```ts
+type CompareArrayLength<T extends any[], U extends any[]> = any
+// 1. 1 extends keyof [1, 2] 数字永远是 true，但字符串却可以正确返回
+// '1' extends keyof [1, 2] == true
+// '3' extends keyof [1, 2] == false
+type CompareArrayLength<T extends any[], U extends any[]> =
+T['length'] extends U['length']
+    ? 0
+    : `${T['length']}` extends keyof U
+        ? -1
+        : 1
+```
+
+
+
 https://anvaka.github.io/ngraph.forcelayout/?graph=Miserables&timeStep=0.5&springLength=10&springCoefficient=0.8&dragCoefficient=0.9&dimensions=2&theta=0.8&gravity=-12
+
+https://github.com/anvaka/ngraph.forcelayout
+
+https://github.com/vasturiano/3d-force-graph
+
+https://github.com/vasturiano/force-graph?tab=readme-ov-file
